@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance System</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Attendance System</h1>
+    </div>
+
+    <div class="date-picker">
+        <form method="GET" action="/">
+            <label>Select Date: 
+                <input type="date" name="date" value="<%= selectedDate %>">
+            </label>
+            <button type="submit">Load</button>
+        </form>
+
+        <% if (hasExistingData) { %>
+            <div class="existing-data">
+                ✅ Attendance already exists for this date
+            </div>
+        <% } %>
+    </div>
+
+    <% if (!hasExistingData) { %>
+        <form class="student-list" action="/attendance" method="POST">
+            <input type="hidden" name="date" value="<%= selectedDate %>">
+            
+            <h2>Mark Attendance</h2>
+            
+            <ul>
+                <% students.forEach(function(student) { %>
+                    <li class="student-item">
+                        <span><%= student.name %></span>
+                        <select name="attendance[<%= student.id %>]">
+                            <option value="Present" <%= attendanceMap[student.id] === 'Present' ? 'selected' : '' %>>Present</option>
+                            <option value="Absent" <%= attendanceMap[student.id] === 'Absent' ? 'selected' : '' %>>Absent</option>
+                        </select>
+                    </li>
+                <% }); %>
+            </ul>
+            
+            <button type="submit">Save Attendance</button>
+        </form>
+    <% } else { %>
+        <div class="student-list">
+            <h2>Existing Attendance for <%= selectedDate %></h2>
+            <ul>
+                <% students.forEach(function(student) { %>
+                    <li class="student-item">
+                        <span><%= student.name %></span>
+                        <span class="status-<%= attendanceMap[student.id].toLowerCase() %>">
+                            <%= attendanceMap[student.id] %>
+                        </span>
+                    </li>
+                <% }); %>
+            </ul>
+        </div>
+    <% } %>
+</body>
+</html>
